@@ -2,19 +2,24 @@ package com.zevcore.accountingsystem.helper;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.EditText;
 import android.widget.ProgressBar;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 import com.zevcore.accountingsystem.MainActivity;
 import com.zevcore.accountingsystem.R;
+import com.zevcore.accountingsystem.ZevcoreAccountingSystemSplashScreen;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @TargetApi(value = 24)
 public class ZevcoreAccountingSystemHelper {
@@ -66,5 +71,72 @@ public class ZevcoreAccountingSystemHelper {
                     "document.getElementById('btn-login').click();" +
                     "document.getElementById('btn-login').disabled = true;", null);
         }
+    }
+
+    /**
+     * @param inUrlText
+     * @param inProgressBar
+     */
+    public void resetToProgressBar(EditText inUrlText, ProgressBar inProgressBar) {
+        inUrlText.setVisibility(View.GONE);
+        inProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * @param inContext
+     * @param inUrlText
+     * @return
+     */
+    private boolean showURLText(Context inContext, EditText inUrlText) {
+        String prefName = inContext.getResources().getString(R.string.zevcore_accounting_user_prefs);
+        SharedPreferences sharedPreferences = inContext.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+        boolean isUrlTextToBeShown;
+        if (sharedPreferences.contains("URL")) {
+            isUrlTextToBeShown = false;
+            Map<String, String> activityExtraMaps = new HashMap<>();
+            activityExtraMaps.put("Load-url", sharedPreferences.getString("URL", "DEFAULT"));
+            startMainActivity(inContext, activityExtraMaps);
+        } else {
+            isUrlTextToBeShown = true;
+            inUrlText.setVisibility(View.VISIBLE);
+        }
+        return isUrlTextToBeShown;
+    }
+
+    /**
+     * @param inContext
+     */
+    public void startMainActivity(Context inContext, Map<String, String> inKeyValue) {
+        Intent mainIntent = new Intent(((ZevcoreAccountingSystemSplashScreen) inContext), MainActivity.class);
+        if (null != inKeyValue && !inKeyValue.isEmpty()) {
+            inKeyValue.entrySet().forEach(entry -> mainIntent.putExtra(entry.getKey(), entry.getValue()));
+        }
+        inContext.startActivity(mainIntent);
+        animateSlideLeft(inContext);
+        ((ZevcoreAccountingSystemSplashScreen) inContext).finish();
+    }
+
+    /**
+     * Transition from Left to Right
+     *
+     * @param context
+     */
+    public void animateSlideLeft(Context context) {
+        ((ZevcoreAccountingSystemSplashScreen) context).overridePendingTransition(R.anim.animate_slide_left_enter, R.anim.animate_slide_left_exit);
+    }
+
+    /**
+     *
+     */
+    public boolean setProgressBar(Context inContext, ProgressBar inProgressBar, EditText inEditText) {
+        if (View.VISIBLE == inProgressBar.getVisibility()) {
+            inProgressBar.setVisibility(View.GONE);
+            return showURLText(inContext, inEditText);
+        }
+        return false;
+    }
+
+    public boolean isValidURL(String urlText) {
+        return Patterns.WEB_URL.matcher(urlText).matches();
     }
 }

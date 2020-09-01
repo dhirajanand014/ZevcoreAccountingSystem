@@ -52,12 +52,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
  * Main Activity class
  */
 public class MainActivity extends AppCompatActivity implements Observer {
+    public static final int REQUEST_CODE = 111;
     private static final int INPUT_FILE_REQUEST_CODE = 1;
     private static final int FILECHOOSER_RESULTCODE = 1;
+    private static final int PERMISSION_ID = 44;
     private String URL;
     private String downloadUrl = "";
-    public static final int REQUEST_CODE = 111;
-    private static final int PERMISSION_ID = 44;
     private WebView webView;
     private int count;
     private SwipeRefreshLayout swipeRefreshLayout;

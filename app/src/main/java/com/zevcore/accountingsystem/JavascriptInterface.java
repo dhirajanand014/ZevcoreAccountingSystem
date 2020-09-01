@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -16,12 +15,13 @@ import android.util.Base64;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import com.zevcore.accountingsystem.location.LocationCoords;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import com.zevcore.accountingsystem.location.LocationCoords;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
@@ -29,17 +29,12 @@ import androidx.core.app.NotificationCompat;
  * Java Interface class for handling javascript function from the website
  */
 public class JavascriptInterface {
-    private Context context;
-    private static LocationCoords locationCoords;
     public static String FILENAME = "";
+    private static LocationCoords locationCoords;
+    private Context context;
 
     public JavascriptInterface(Context context) {
         this.context = context;
-    }
-
-    @android.webkit.JavascriptInterface
-    public void getBase64FromBlobData(String base64Data, String contentType) throws IOException {
-        convertBase64StringAndStoreIt(base64Data, contentType);
     }
 
     public static void setLocationForJavascriptInterface(double latitude, double longitude) {
@@ -53,21 +48,6 @@ public class JavascriptInterface {
             return new LocationCoords();
         }
         return locationCoords;
-    }
-
-
-    @android.webkit.JavascriptInterface
-    public void checkAndSaveDetails(String inUserName, String inPassword) {
-        if (!TextUtils.isEmpty(inUserName) && !TextUtils.isEmpty(inPassword)) {
-            String prefName = context.getResources().getString(R.string.zevcore_accounting_user_prefs);
-            SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
-            if (!sharedPreferences.contains(inUserName) || !sharedPreferences.getString(inUserName, "").equals(inPassword)) {
-                SharedPreferences.Editor sharedPreferencesEdit = sharedPreferences.edit();
-                sharedPreferencesEdit.clear();
-                sharedPreferencesEdit.putString(inUserName, inPassword);
-                sharedPreferencesEdit.apply();
-            }
-        }
     }
 
     /**
@@ -95,6 +75,25 @@ public class JavascriptInterface {
                     "xhr.send();";
         }
         return "javascript: alert('File : Zevcore Accounting System " + FILENAME + " Cannot be downloaded);";
+    }
+
+    @android.webkit.JavascriptInterface
+    public void getBase64FromBlobData(String base64Data, String contentType) throws IOException {
+        convertBase64StringAndStoreIt(base64Data, contentType);
+    }
+
+    @android.webkit.JavascriptInterface
+    public void checkAndSaveDetails(String inUserName, String inPassword) {
+        if (!TextUtils.isEmpty(inUserName) && !TextUtils.isEmpty(inPassword)) {
+            String prefName = context.getResources().getString(R.string.zevcore_accounting_user_prefs);
+            SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+            if (!sharedPreferences.contains(inUserName) || !sharedPreferences.getString(inUserName, "").equals(inPassword)) {
+                SharedPreferences.Editor sharedPreferencesEdit = sharedPreferences.edit();
+                sharedPreferencesEdit.clear();
+                sharedPreferencesEdit.putString(inUserName, inPassword);
+                sharedPreferencesEdit.apply();
+            }
+        }
     }
 
     /**

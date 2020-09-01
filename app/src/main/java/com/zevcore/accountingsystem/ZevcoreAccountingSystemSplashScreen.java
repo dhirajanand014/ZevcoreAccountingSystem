@@ -1,13 +1,10 @@
 package com.zevcore.accountingsystem;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
@@ -15,7 +12,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.zevcore.accountingsystem.helper.ZevcoreAccountingSystemHelper;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 public class ZevcoreAccountingSystemSplashScreen extends AppCompatActivity implements Observer {
     private ProgressBar progressBar;
     private EditText urlText;
+    private ZevcoreAccountingSystemHelper zevcoreAccountingSystemHelper = new ZevcoreAccountingSystemHelper();
     private NetworkChangeReceiver networkChangeReceiverSplashScreen = new NetworkChangeReceiver();
 
     @Override
@@ -37,26 +38,13 @@ public class ZevcoreAccountingSystemSplashScreen extends AppCompatActivity imple
         progressBar = findViewById(R.id.progressBar);
         urlText = findViewById(R.id.zevcoreUrl);
         urlText.setOnEditorActionListener((textView, i, keyEvent) -> {
-            Intent mainIntent = new Intent(ZevcoreAccountingSystemSplashScreen.this, MainActivity.class);
-            mainIntent.putExtra("Load-url", textView.getText().toString());
-            startActivity(mainIntent);
-            animateSlideLeft(this);
-            finish();
+            startWebView(textView);
             return true;
         });
         progressBar.setVisibility(View.VISIBLE);
         IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         ObservableObject.getInstance().addObserver(this);
         registerReceiver(networkChangeReceiverSplashScreen, intentFilter);
-    }
-
-    /**
-     * Transition from Left to Right
-     *
-     * @param context
-     */
-    public void animateSlideLeft(Context context) {
-        ((ZevcoreAccountingSystemSplashScreen) context).overridePendingTransition(R.anim.animate_slide_left_enter, R.anim.animate_slide_left_exit);
     }
 
     @Override
@@ -89,34 +77,31 @@ public class ZevcoreAccountingSystemSplashScreen extends AppCompatActivity imple
             snackBar.show();
 
             if (status) {
-                setProgressBar();
-                showURLText();
+                zevcoreAccountingSystemHelper.setProgressBar(this, progressBar, urlText);
+            } else {
+                zevcoreAccountingSystemHelper.resetToProgressBar(urlText, progressBar);
             }
         }
     }
 
     /**
-     *
+     * @param view
      */
-    private void showURLText() {
-        String prefName = this.getResources().getString(R.string.zevcore_accounting_user_prefs);
-        SharedPreferences sharedPreferences = this.getSharedPreferences(prefName, Context.MODE_PRIVATE);
-        if (sharedPreferences.contains("URL")) {
-            Intent mainIntent = new Intent(ZevcoreAccountingSystemSplashScreen.this, MainActivity.class);
-            startActivity(mainIntent);
-            animateSlideLeft(this);
-            finish();
+    public void loadWebView(View view) {
+        if (urlText.length() <= 0 || !zevcoreAccountingSystemHelper.isValidURL(urlText.getText().toString())) {
+            urlText.requestFocus();
+            urlText.setError("Please enter a valid url");
         } else {
-            urlText.setVisibility(View.VISIBLE);
+            startWebView(urlText);
         }
     }
 
     /**
-     *
+     * @param textView
      */
-    private void setProgressBar() {
-        if (View.VISIBLE == progressBar.getVisibility()) {
-            progressBar.setVisibility(View.GONE);
-        }
+    private void startWebView(TextView textView) {
+        Map<String, String> activityExtraMaps = new HashMap<>();
+        activityExtraMaps.put("Load-url", textView.getText().toString());
+        zevcoreAccountingSystemHelper.startMainActivity(this, activityExtraMaps);
     }
 }

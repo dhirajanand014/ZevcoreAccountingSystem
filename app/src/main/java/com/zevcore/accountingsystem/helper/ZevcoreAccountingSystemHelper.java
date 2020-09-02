@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
+
 @TargetApi(value = 24)
 public class ZevcoreAccountingSystemHelper {
 
@@ -76,18 +79,21 @@ public class ZevcoreAccountingSystemHelper {
     /**
      * @param inUrlText
      * @param inProgressBar
+     * @param nextButton
      */
-    public void resetToProgressBar(EditText inUrlText, ProgressBar inProgressBar) {
+    public void resetToProgressBar(AppCompatEditText inUrlText, ProgressBar inProgressBar, AppCompatButton nextButton) {
         inUrlText.setVisibility(View.GONE);
+        nextButton.setVisibility(View.GONE);
         inProgressBar.setVisibility(View.VISIBLE);
     }
 
     /**
      * @param inContext
      * @param inUrlText
+     * @param nextButton
      * @return
      */
-    private boolean showURLText(Context inContext, EditText inUrlText) {
+    private boolean showURLText(Context inContext, AppCompatEditText inUrlText, AppCompatButton nextButton) {
         String prefName = inContext.getResources().getString(R.string.zevcore_accounting_user_prefs);
         SharedPreferences sharedPreferences = inContext.getSharedPreferences(prefName, Context.MODE_PRIVATE);
         boolean isUrlTextToBeShown;
@@ -98,6 +104,7 @@ public class ZevcoreAccountingSystemHelper {
             startMainActivity(inContext, activityExtraMaps);
         } else {
             isUrlTextToBeShown = true;
+            nextButton.setVisibility(View.VISIBLE);
             inUrlText.setVisibility(View.VISIBLE);
         }
         return isUrlTextToBeShown;
@@ -105,9 +112,18 @@ public class ZevcoreAccountingSystemHelper {
 
     /**
      * @param inContext
+     * @param inKeyValue
      */
     public void startMainActivity(Context inContext, Map<String, String> inKeyValue) {
-        Intent mainIntent = new Intent(((ZevcoreAccountingSystemSplashScreen) inContext), MainActivity.class);
+        String prefName = inContext.getResources().getString(R.string.zevcore_accounting_user_prefs);
+        SharedPreferences sharedPreferences = inContext.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+        if (!sharedPreferences.contains("URL")) {
+            SharedPreferences.Editor sharedPreferencesEdit = sharedPreferences.edit();
+            sharedPreferencesEdit.clear();
+            sharedPreferencesEdit.putString("URL", inKeyValue.get("Load-url"));
+            sharedPreferencesEdit.apply();
+        }
+        Intent mainIntent = new Intent(inContext, MainActivity.class);
         if (null != inKeyValue && !inKeyValue.isEmpty()) {
             inKeyValue.entrySet().forEach(entry -> mainIntent.putExtra(entry.getKey(), entry.getValue()));
         }
@@ -128,10 +144,10 @@ public class ZevcoreAccountingSystemHelper {
     /**
      *
      */
-    public boolean setProgressBar(Context inContext, ProgressBar inProgressBar, EditText inEditText) {
+    public boolean setProgressBar(Context inContext, ProgressBar inProgressBar, AppCompatEditText inEditText, AppCompatButton nextButton) {
         if (View.VISIBLE == inProgressBar.getVisibility()) {
             inProgressBar.setVisibility(View.GONE);
-            return showURLText(inContext, inEditText);
+            return showURLText(inContext, inEditText, nextButton);
         }
         return false;
     }

@@ -35,7 +35,7 @@
         app:layout_constraintVertical_bias="0.487" />
 
     <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/zevcoreUrl"
+        android:id="@+id/zevCoreUrl"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:autofillHints="Enter URL"
@@ -51,10 +51,12 @@
         app:layout_constraintVertical_bias="0.65" />
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/zevCoreUrlButton"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:background="@drawable/custom_ripple_effect"
         android:text="Next"
+        android:visibility="gone"
         android:layout_centerHorizontal="true"
         android:textAllCaps="false"
         android:textColor="@color/cardview_light_background"
@@ -62,8 +64,8 @@
         android:onClick="loadWebView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toLeftOf="@+id/zevcoreUrl"
-        app:layout_constraintRight_toRightOf="@+id/zevcoreUrl"
-        app:layout_constraintTop_toTopOf="@+id/zevcoreUrl"
+        app:layout_constraintLeft_toLeftOf="@+id/zevCoreUrl"
+        app:layout_constraintRight_toRightOf="@+id/zevCoreUrl"
+        app:layout_constraintTop_toTopOf="@+id/zevCoreUrl"
         app:layout_constraintVertical_bias="0.26" />
 </androidx.constraintlayout.widget.ConstraintLayout>

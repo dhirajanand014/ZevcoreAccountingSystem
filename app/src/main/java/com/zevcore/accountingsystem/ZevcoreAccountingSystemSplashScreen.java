@@ -20,6 +20,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.content.ContextCompat;
 
 /**
@@ -27,7 +29,8 @@ import androidx.core.content.ContextCompat;
  */
 public class ZevcoreAccountingSystemSplashScreen extends AppCompatActivity implements Observer {
     private ProgressBar progressBar;
-    private EditText urlText;
+    private AppCompatEditText urlText;
+    private AppCompatButton nextButton;
     private ZevcoreAccountingSystemHelper zevcoreAccountingSystemHelper = new ZevcoreAccountingSystemHelper();
     private NetworkChangeReceiver networkChangeReceiverSplashScreen = new NetworkChangeReceiver();
 
@@ -36,7 +39,8 @@ public class ZevcoreAccountingSystemSplashScreen extends AppCompatActivity imple
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
         progressBar = findViewById(R.id.progressBar);
-        urlText = findViewById(R.id.zevcoreUrl);
+        urlText = findViewById(R.id.zevCoreUrl);
+        nextButton= findViewById(R.id.zevCoreUrlButton);
         urlText.setOnEditorActionListener((textView, i, keyEvent) -> {
             startWebView(textView);
             return true;
@@ -77,9 +81,9 @@ public class ZevcoreAccountingSystemSplashScreen extends AppCompatActivity imple
             snackBar.show();
 
             if (status) {
-                zevcoreAccountingSystemHelper.setProgressBar(this, progressBar, urlText);
+                zevcoreAccountingSystemHelper.setProgressBar(this, progressBar, urlText, nextButton);
             } else {
-                zevcoreAccountingSystemHelper.resetToProgressBar(urlText, progressBar);
+                zevcoreAccountingSystemHelper.resetToProgressBar(urlText, progressBar, nextButton);
             }
         }
     }

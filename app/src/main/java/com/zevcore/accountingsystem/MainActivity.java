@@ -194,15 +194,13 @@ public class MainActivity extends AppCompatActivity implements Observer {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 swipeRefreshLayout.setRefreshing(false);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    view.evaluateJavascript("javascript:var printButton = document.getElementsByClassName('buttons-print');" +
-                            "                                  var csvButton = document.getElementsByClassName('buttons-csv');" +
-                            "                                       if(printButton.length > 0 && csvButton.length > 0){" +
-                            "                                            printButton[0].style.display = csvButton[0].style.display = 'none';" +
-                            "                                       }", null);
-                    if (URL.equals(url)) {
-                        zevcoreAccountingSystemHelper.autoLoginIntoGIS(view.getContext(), view);
-                    }
+                view.evaluateJavascript("javascript:var printButton = document.getElementsByClassName('buttons-print');" +
+                        "                                  var csvButton = document.getElementsByClassName('buttons-csv');" +
+                        "                                       if(printButton.length > 0 && csvButton.length > 0){" +
+                        "                                            printButton[0].style.display = csvButton[0].style.display = 'none';" +
+                        "                                       }", null);
+                if (URL.equals(url)) {
+                    zevcoreAccountingSystemHelper.autoLoginIntoGIS(view.getContext(), view);
                 }
             }
 

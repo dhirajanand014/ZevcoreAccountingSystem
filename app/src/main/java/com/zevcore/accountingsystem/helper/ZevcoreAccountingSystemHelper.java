@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.zevcore.accountingsystem.MainActivity;
